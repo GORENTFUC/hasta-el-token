@@ -5,3 +5,10 @@
   En la etapa 6 añadiremos un bloque @theme con los colores y la
   tipografía del portafolio.
 */
+
+/* Fondo y color base en toda la página (no solo en <main>). */
+html {
+  color-scheme: dark;
+  background-color: var(--color-neutral-950);
+  color: var(--color-neutral-100);
+}

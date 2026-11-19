@@ -9,6 +9,14 @@ export const TIPOS_COFRE = ['normal', 'especial', 'enterrado', 'espiritus'] as c
 /** 'normal' | 'especial' | 'enterrado' | 'espiritus', derivado de la lista. */
 export type TipoCofre = (typeof TIPOS_COFRE)[number]
 
+/** Nombre visible de cada tipo (pantalla, historial e imagen para compartir). */
+export const ETIQUETAS_COFRE: Record<TipoCofre, string> = {
+  normal: 'Normal',
+  especial: 'Especial',
+  enterrado: 'Enterrado',
+  espiritus: 'De espíritus',
+}
+
 /** Un cofre abierto. `fecha` es una fecha ISO 8601. */
 export type Apertura = {
   tipo: TipoCofre
