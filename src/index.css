@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+/*
+  Tailwind 4 se configura aquí, en CSS (no hay tailwind.config.js).
+  En la etapa 6 añadiremos un bloque @theme con los colores y la
+  tipografía del portafolio.
+*/
