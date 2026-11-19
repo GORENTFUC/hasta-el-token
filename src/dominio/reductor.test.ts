@@ -49,6 +49,13 @@ describe('deshacer', () => {
   })
 })
 
+describe('reemplazar', () => {
+  it('sustituye todo el estado por el recibido', () => {
+    const nuevo: Estado = { version: 1, rondaActual: [], historial: [] }
+    expect(reductor(conDosCofres(), { tipo: 'reemplazar', estado: nuevo })).toBe(nuevo)
+  })
+})
+
 describe('cerrarRonda', () => {
   it('guarda la ronda en el historial y empieza una nueva', () => {
     const e = reductor(conDosCofres(), { tipo: 'cerrarRonda', id: 'r1', fecha: F3 })

@@ -51,6 +51,9 @@ export function reductor(estado: Estado, accion: Accion): Estado {
       }
     }
 
+    case 'reemplazar':
+      return accion.estado
+
     default:
       return estado
   }

@@ -1,16 +1,34 @@
-import { useReducer } from 'react'
+import { useEffect, useReducer } from 'react'
+import {
+  cargarEstado,
+  guardarEstado,
+  pedirAlmacenamientoPersistente,
+} from './almacenamiento/persistencia'
 import { BotonCofre } from './componentes/BotonCofre'
 import { BotonToken } from './componentes/BotonToken'
 import { Estadisticas } from './componentes/Estadisticas'
 import { Historial } from './componentes/Historial'
+import { Respaldo } from './componentes/Respaldo'
 import { calcularEstadisticas, contarPorTipo } from './dominio/estadisticas'
 import { textoCofres } from './dominio/formato'
 import { generarId } from './dominio/id'
 import { reductor } from './dominio/reductor'
-import { ETIQUETAS_COFRE, TIPOS_COFRE, estadoInicial } from './dominio/tipos'
+import { ETIQUETAS_COFRE, TIPOS_COFRE } from './dominio/tipos'
 
 function App() {
-  const [estado, despachar] = useReducer(reductor, estadoInicial)
+  // Tercer argumento = "inicialización perezosa": cargarEstado se ejecuta una
+  // sola vez, al montar la app, y no en cada render.
+  const [estado, despachar] = useReducer(reductor, undefined, cargarEstado)
+
+  // Guardar en localStorage cada vez que el estado cambie.
+  useEffect(() => {
+    guardarEstado(estado)
+  }, [estado])
+
+  // Una sola vez al abrir: pedir que el navegador no borre los datos.
+  useEffect(() => {
+    void pedirAlmacenamientoPersistente()
+  }, [])
 
   // Valores derivados: se calculan del estado en cada render, no se guardan aparte.
   const total = estado.rondaActual.length
@@ -74,6 +92,10 @@ function App() {
 
       <Estadisticas datos={estadisticas} />
       <Historial rondas={estado.historial} />
+      <Respaldo
+        estado={estado}
+        onImportar={(nuevo) => despachar({ tipo: 'reemplazar', estado: nuevo })}
+      />
     </main>
   )
 }

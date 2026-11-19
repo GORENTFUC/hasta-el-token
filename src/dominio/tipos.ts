@@ -47,6 +47,8 @@ export type Accion =
   | { tipo: 'sumarCofre'; cofre: TipoCofre; fecha: string }
   | { tipo: 'deshacer' }
   | { tipo: 'cerrarRonda'; id: string; fecha: string }
+  /** Sustituye todo el estado (al importar un respaldo ya validado). */
+  | { tipo: 'reemplazar'; estado: Estado }
 
 export const estadoInicial: Estado = {
   version: 1,
