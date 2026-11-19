@@ -1,6 +1,11 @@
 import { useReducer } from 'react'
 import { BotonCofre } from './componentes/BotonCofre'
-import { contarPorTipo } from './dominio/estadisticas'
+import { BotonToken } from './componentes/BotonToken'
+import { Estadisticas } from './componentes/Estadisticas'
+import { Historial } from './componentes/Historial'
+import { calcularEstadisticas, contarPorTipo } from './dominio/estadisticas'
+import { textoCofres } from './dominio/formato'
+import { generarId } from './dominio/id'
 import { reductor } from './dominio/reductor'
 import { ETIQUETAS_COFRE, TIPOS_COFRE, estadoInicial } from './dominio/tipos'
 
@@ -10,7 +15,10 @@ function App() {
   // Valores derivados: se calculan del estado en cada render, no se guardan aparte.
   const total = estado.rondaActual.length
   const porTipo = contarPorTipo(estado.rondaActual)
-  const puedeDeshacer = total > 0 || estado.historial.length > 0
+  const estadisticas = calcularEstadisticas(estado.historial)
+  // Si la ronda está vacía y hay historial, "deshacer" reabre la última ronda.
+  const ultimaRonda = total === 0 ? estado.historial.at(-1) : undefined
+  const puedeDeshacer = total > 0 || ultimaRonda !== undefined
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-6 px-4 py-6">
@@ -41,14 +49,31 @@ function App() {
         ))}
       </section>
 
-      <button
-        type="button"
-        onClick={() => despachar({ tipo: 'deshacer' })}
-        disabled={!puedeDeshacer}
-        className="mx-auto min-h-12 touch-manipulation rounded-xl border border-neutral-600 px-6 text-base font-medium hover:bg-neutral-800 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        Deshacer último
-      </button>
+      <div className="flex flex-col gap-3">
+        <BotonToken
+          desactivado={total === 0}
+          onConseguido={() =>
+            despachar({ tipo: 'cerrarRonda', id: generarId(), fecha: new Date().toISOString() })
+          }
+        />
+
+        <p aria-live="polite" className="min-h-6 text-center text-sm text-neutral-300">
+          {ultimaRonda &&
+            `¡Token conseguido en ${textoCofres(ultimaRonda.aperturas.length)}! ¿Fue por error? Puedes reabrir la ronda.`}
+        </p>
+
+        <button
+          type="button"
+          onClick={() => despachar({ tipo: 'deshacer' })}
+          disabled={!puedeDeshacer}
+          className="mx-auto min-h-12 touch-manipulation rounded-xl border border-neutral-600 px-6 text-base font-medium hover:bg-neutral-800 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {ultimaRonda ? 'Reabrir última ronda' : 'Deshacer último'}
+        </button>
+      </div>
+
+      <Estadisticas datos={estadisticas} />
+      <Historial rondas={estado.historial} />
     </main>
   )
 }
